@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="row pinGenerator">
+            <div class="col-md-8 half-width">
+                <div class="row">
+                    <div class="col-8">
+                        <input class="form-control" id="key" type="text" value="" readonly>
+                    </div>
+                    <div class="col-4">
+                        <button id="genBtn" class="generate-btn" onclick="generateKey()">Generate Pin</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-sm-8 screen half-width">
+                <input class="form-control" id="show-input" type="text" value="">
+            </div>
+        </div>
+
+        <div class="row notify-section">
+            <p class="notify  col-8" id="not-matched">❌ Pin Didn't Match, Please try again</p>
+            <p class="notify  col-8" id="matched">✅ Pin Matched... Secret door is opening for you</p>
+        </div>
+
+        <div class="row">
+            <div class="numbers col-md-4 calc-body ">
+                <div class="calc-button-row row">
+                    <div class="button col" onclick="display('7')">7</div>
+                    <div class="button col" onclick="display('8')">8</div>
+                    <div class="button col" onclick="display('9')">9</div>
+                </div>
+                <div class="calc-button-row row ">
+                    <div class="button col" onclick="display('4')">4</div>
+                    <div class="button col" onclick="display('5')">5</div>
+                    <div class="button col" onclick="display('6')">6</div>
+                </div>
+                <div class="calc-button-row row">
+                    <div class="button col" onclick="display('1')">1</div>
+                    <div class="button col" onclick="display('2')">2</div>
+                    <div class="button col" onclick="display('3')">3</div>
+                </div>
+                <div class="calc-button-row row">
+                    <div class="button col" onclick="backspace()">>></div>
+                    <div class="button col" onclick="display('0')">0</div>
+                    <div class="button col" onclick="clr()">C</div>
+                </div>
+                <div class="row">
+                    <div class="col-8 text-center m-auto">
+                        <button type="submit" class="submit-btn" onclick="submitted()">Submit</button>
+                        <p id="action-left"></p>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            
+        </div>
+        <script>
+            var triesLeft;
+            function hideMessage() {
+                var displayMessage = document.getElementsByClassName("notify");
+                for (var i = 0; i < 2; i++) {
+                    displayMessage[i].style.display = "none";
+                }
+            }
+            hideMessage();
+            function generateKey() {
+                hideMessage();
+                triesLeft = 3;
+                var keyGen = Math.random() * 10000;
+                var roundKeyGen = Math.round(keyGen);
+                if (roundKeyGen < 1000) {
+                    generateKey();
+                }
+                else {
+                    document.getElementById("key").value = roundKeyGen;
+                }
+                var actionLeft  = document.getElementById('action-left');
+                actionLeft.innerHTML = 'you can try ' + triesLeft + ' times only';
+            }
+
+            function display(input) {
+                hideMessage();
+                var hold = document.getElementById("show-input");
+                var displayString = hold.value + input;
+                hold.value = displayString;
+            }
+            function clr() {
+                document.getElementById("show-input").value = " ";
+            }
+            function submitted() {
+                var match;
+                var generatedKey = document.getElementById("key").value;
+                console.log(generatedKey);
+                var givenInput = document.getElementById("show-input").value;
+                console.log(givenInput);
+                for (var i = 0; i < generatedKey.length; i++) {
+                    if (generatedKey[i] != givenInput[i]) {
+                        match = -1;
+                        break;
+                    }
+                    else {
+                        if (i == givenInput.length - 1) {
+                            match = 0;
+                        }
+                        else {
+                            continue;
+                        }
+                    }
+
+                }
+                console.log(match);
+                printMessage(match);
+                if(match == -1){
+                    triesLeft = triesLeft - 1;
+                    if(triesLeft == 0){
+                        document.getElementById("key").value = '';
+                        var actionLeft  = document.getElementById('action-left');
+                        actionLeft.innerText = 'generate a new key and try again';
+                    }
+                    else{
+                        var actionLeft  = document.getElementById('action-left');
+                        actionLeft.innerText = triesLeft + ' try left';
+                    }
+
+                }
+                else{
+                    document.getElementById("key").value = '';
+                    var actionLeft  = document.getElementById('action-left');
+                    actionLeft.innerText = '';
+                }
+            }
+            function printMessage(value) {
+                if (value == 0) {
+                    console.log('inside matched')
+                    var matched = document.getElementById("matched");
+                    matched.style.display = "block";
+
+                }
+                else {
+                    console.log('inside matched')
+                    var notMatched = document.getElementById("not-matched");
+                    notMatched.style.display = "block";
+
+                }
+                refresh();
+            }
+            function refresh() {
+                document.getElementById("show-input").value = "";
+            }
+
+        </script>
+</body>
+
+</html>
